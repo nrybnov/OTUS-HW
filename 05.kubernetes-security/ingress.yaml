@@ -1,0 +1,70 @@
+
+
+apiVersion: networking.k8s.io/v1 
+kind: Ingress
+metadata:
+  name: web
+  namespace: homework
+  annotations:
+    kubernetes.io/ingress.class: "nginx"
+    nginx.ingress.kubernetes.io/configuration-snippet: |
+      rewrite ^/index.html /homepage permanent;
+spec:
+  rules:
+  - host: homework.otus
+    http:
+      paths:
+      - pathType: Prefix
+        path: /index.html
+        backend:
+          service:
+            name: web
+            port:
+              number: 8000
+  - host: homework.otus
+    http:
+      paths:
+      - pathType: Prefix
+        path: /homepage
+        backend:
+          service:
+            name: web
+            port:
+              number: 8000
+              
+  - host: homework.otus
+    http:
+      paths:
+      - pathType: Prefix
+        path: /conf/file
+        backend:
+          service:
+            name: web
+            port:
+              number: 8000
+              
+  - host: homework.otus
+    http:
+      paths:
+      - pathType: Prefix
+        path: /metrics
+        backend:
+          service:
+            name: web
+            port:
+              number: 8000
+              
+  - host: homework.otus
+    http:
+      paths:
+      - pathType: Prefix
+        path: /metrics.html
+        backend:
+          service:
+            name: web
+            port:
+              number: 8000
+
+  ingressClassName: nginx
+
+
