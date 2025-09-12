@@ -1,0 +1,27 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name:  mysql-operator
+  namespace: default
+  labels:
+    app:  mysql-operator
+spec:
+  selector:
+    matchLabels:
+      app: mysql-operator
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app:  mysql-operator
+    spec:
+      serviceAccountName: manager-sa
+      containers:
+      - name:  mysql-operator
+        image:  rybnovn/shell-operator:v1.6.2
+        #imagePullPolicy: IfNotPresent
+        imagePullPolicy: Always
+
+        
+      restartPolicy: Always
