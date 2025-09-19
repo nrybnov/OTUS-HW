@@ -1,0 +1,29 @@
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: mysql-crd-${name}-persistent-storage
+  finalizers: []
+  labels:
+    type: local
+spec:
+  storageClassName: manual
+  capacity:
+    storage: ${size}
+  accessModes:
+    - ReadWriteOnce
+  hostPath:
+    path: "/opt/db/pv-${name}"
+
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: mysql-crd-${name}-pvc
+  finalizers: []
+spec:
+  storageClassName: manual
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: ${size}

@@ -1,0 +1,74 @@
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: mysql-crd-${name}
+spec:
+  ports:
+  - port: 3306
+  selector:
+    app: mysql-crd-${name}
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mysql-crd-${name}
+spec:
+  selector:
+    matchLabels:
+      app: mysql-crd-${name}
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app: mysql-crd-${name}
+    spec:
+      containers:
+      - image: ${image}
+        name: mysql-crd-${name}
+        env:
+        - name: MYSQL_ROOT_PASSWORD
+          value: ${password}
+        ports:
+        - containerPort: 3306
+          name: mysql
+        volumeMounts:
+        - name: mysql-crd-${name}-persistent-storage
+          mountPath: /var/lib/mysql
+        lifecycle:
+          postStart:
+            exec:
+              command: 
+              - /bin/bash
+              - -c
+              - | 
+                until mysqladmin -uroot -p${password} create  ${dbname} &>/dev/null; do
+                  echo "createing db  ${dbname}"
+                  sleep 5;
+                  if mysql -N -${password} -e 'show databases' 2>/dev/null  | cat | grep  ${dbname}  &>/dev/null ; then
+                    echo "Existing ${dbname}"
+                    break;
+                  fi
+                done
+        livenessProbe:
+          exec:
+            command:
+            - /bin/bash
+            - -c
+            - mysqladmin  -p${password} ping
+          initialDelaySeconds: 5
+          periodSeconds: 5       
+        readinessProbe:
+          exec:
+            command: 
+            - /bin/bash
+            - -c
+            - mysql -N -p${password} -e "show databases" 2>/dev/null  | cat | grep  -q ${dbname}
+          initialDelaySeconds: 5
+          periodSeconds: 5       
+      volumes:
+      - name: mysql-crd-${name}-persistent-storage
+        persistentVolumeClaim:
+          claimName: mysql-crd-${name}-pvc
