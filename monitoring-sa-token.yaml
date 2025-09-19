@@ -1,0 +1,27 @@
+apiVersion: v1
+kind: Secret
+metadata:
+  name: monitoring-sa-token
+  namespace: homework
+  annotations:
+    kubernetes.io/service-account.name: monitoring
+type: kubernetes.io/service-account-token
+data:
+  token: |
+    ZXlKaGJHY2lPaUpTVXpJMU5pSXNJbXRwWkNJNkltdE5Za3hXZFhOcWIxZG9WMk5VZEc5VFUxUXRk
+    VlZqTjFkVU9VNVpiM0JTY0RKQk5ITkJkR3QyY2pBaWZRLmV5SmhkV1FpT2xzaWFIUjBjSE02THk5
+    cmRXSmxjbTVsZEdWekxtUmxabUYxYkhRdWMzWmpMbU5zZFhOMFpYSXVhR1F1Ykc5allXd2lYU3dp
+    Wlhod0lqb3hOelUzTURBeU9EUXlMQ0pwWVhRaU9qRTNOVFkzTkRNMk5ESXNJbWx6Y3lJNkltaDBk
+    SEJ6T2k4dmEzVmlaWEp1WlhSbGN5NWtaV1poZFd4MExuTjJZeTVqYkhWemRHVnlMbWhrTG14dlky
+    RnNJaXdpYW5ScElqb2lNemxpT1dJNE16Y3RNREJoTmkwME1UTmhMVGcwWkRBdFlqWmlPVFkwWkRK
+    aU1ESmlJaXdpYTNWaVpYSnVaWFJsY3k1cGJ5STZleUp1WVcxbGMzQmhZMlVpT2lKb2IyMWxkMjl5
+    YXlJc0luTmxjblpwWTJWaFkyTnZkVzUwSWpwN0ltNWhiV1VpT2lKdGIyNXBkRzl5YVc1bklpd2lk
+    V2xrSWpvaU5qY3hNREEyWlRndFpHWXhNaTAwTW1RMUxXRTJOVEF0WVdGbU9EazNNalZoT0dRMklu
+    MTlMQ0p1WW1ZaU9qRTNOVFkzTkRNMk5ESXNJbk4xWWlJNkluTjVjM1JsYlRwelpYSjJhV05sWVdO
+    amIzVnVkRHBvYjIxbGQyOXlhenB0YjI1cGRHOXlhVzVuSW4wLmJ1MENRaHVOMmUteElJSTRYaVgy
+    WlprYmdZYkVFQjdsMVZiLVFiRU5ma2xQZWwtNHVyZkd2dUdoTTYtSDVFOVJ0YXNiWXFJbjlBZVd6
+    UmZ0N29FU0ZOeEdBUWY5MlRGUlR4ZXMzU1VfSkxKWEs3SnlId1VqMmROV0xtUGxJTWZlR2VFdGtZ
+    SU43WEJfdVZvSkk3ZUx5RlJqSGt6SlZPc0ZtX3BqSTI1d1hLblQ3RTJjN2t3M0xvT096b2xOV0FR
+    MEdzNGhOemE0VDc3YVJ2dV8zdVJNM3JtTG1hZjZmLUtPbmVzREtERlIxdGIyLUw2M1RhZlBUSThk
+    emhyNXBRNDRjRmUxd284em91S3BVenNHMlNiUndjeGF5eXczemt0TlhLRGVFcmxIbEphcmE5Yjhm
+    Q3B2UkdrRDhRWjBjVHRKQm1IcUkwZDhZeFhGWlZiaU1qQ3NUQQ==
