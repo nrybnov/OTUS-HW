@@ -1,0 +1,79 @@
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: web
+  namespace: homework
+  labels:
+    app.kubernetes.io/name: web
+spec:
+  replicas: 3
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 1
+      maxSurge: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: web
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: web
+    spec:
+      nodeSelector:
+        kubernetes.io/hostname: k8s-w001
+      tolerations:
+      - key: homework
+        operator: Exists
+        effect: NoExecute
+      initContainers:
+        - name: init
+          image: alpine:latest
+          command: ['sh', '-c', "echo '<html><center><h1>Homework04</h1></center><html>' > /init/index.html"]
+          
+          volumeMounts:
+            - name: homework
+              mountPath: "/init"
+      containers:
+        - name: web
+          image: nginx:latest
+          volumeMounts:
+            - name: homework
+              mountPath: "/homework"
+            - name: default
+              mountPath: "/etc/nginx/conf.d/"
+            - name: config-volume
+              mountPath: "/homework/conf/"
+              readOnly: true
+          readinessProbe:
+            httpGet:
+              path: /index.html
+              port: 8000
+            initialDelaySeconds: 5
+            periodSeconds: 5  
+  
+          lifecycle:
+            preStop:
+              exec:
+                command: ["/bin/sh", "-c", "rm -rf /homework/*"]
+      
+          ports:
+            - containerPort: 8000
+              name: http
+              
+      volumes:
+        - name: homework
+          persistentVolumeClaim:
+            claimName: pvc001-web
+        - name: default
+          configMap:
+            name: web-nginx-configmap       
+        - name: config-volume
+          configMap:
+            name: test-web-configmap      
+              
+              
+              
+              
+     
