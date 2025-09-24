@@ -79,139 +79,176 @@ kubectl get nodes -o custom-columns=NAME:.metadata.name,TAINTS:.spec.taints
 
 
 
-Под s3 хранилище, будем использовать minio, для этого соберем кастомный образ.
+Устанавливаем Argocd хельм чартом
 
 
-Dockerfile: 
-
-```
-FROM ubuntu:25.10
-LABEL description="s3-minio"
-ENV TZ=Europe/Moscow
-RUN apt-get update -y && apt-get install apt-utils -y && apt-get install sudo -y 
-RUN apt clean all
-COPY "./minio" "/usr/local/bin/minio"
-RUN chmod +x /usr/local/bin/minio
-RUN touch /start.sh && chmod +x /start.sh
-RUN echo '#!/bin/bash' >> /start.sh
-RUN echo 'set -e' >> /start.sh
-RUN echo ' ' >> /start.sh
-RUN echo 'useradd minio -r;' >> /start.sh
-RUN echo 'mkdir -p /minio/data;' >> /start.sh
-RUN echo 'chown -R minio:minio /minio;' >> /start.sh
-RUN echo 'sudo -u minio minio server --address :9000 --console-address :9001 /minio/data' >> /start.sh
-CMD [ "/start.sh" ]
+values.yaml: 
 
 ```
-
-
-
-
-
-Деплоймент minio:
-
-deployment.yaml
-
-```
-apiVersion: v1
-kind: Namespace
-metadata:
-  name: storage-minio
-  labels:
-    name: storage-minio
-    
 ---
-
-apiVersion: v1
-kind: PersistentVolumeClaim
-metadata:
-  name: pvc001-minio
-  namespace: storage-minio
-spec:
-  accessModes:
-    - ReadWriteOnce
-  resources:
-    requests:
-      storage: 1Gi
-  storageClassName: "second-nfs-client"
-  
----
-
-apiVersion: apps/v1
-kind: Deployment
-metadata:
-  name: minio
-  namespace: storage-minio
-  labels:
-    app.kubernetes.io/name: minio
-spec:
-  replicas: 1
-  selector:
-    matchLabels:
-      app.kubernetes.io/name: minio
-  template:
-    metadata:
-      labels:
-        app.kubernetes.io/name: minio
-    spec:
-      containers:
-        - name: minio
-          image: rybnovn/minio:1.0
-          volumeMounts:
-            - name: minio-data
-              mountPath: "/minio/data"
-      
-          ports:
-            - containerPort: 9000
-              name: http-data
-            - containerPort: 9001
-              name: http-admin         
-              
-      volumes:
-        - name: minio-data
-          persistentVolumeClaim:
-            claimName: pvc001-minio
-                
-              
-
-
----
-
-apiVersion: v1
-kind: Service
-metadata:
-  namespace: storage-minio
-  name: minio
-  labels:
-    app.kubernetes.io/name: minio
-spec:
-  ports:
-    - port: 9000
-      targetPort: 9000
-      name: http-data
-    - port: 9001
-      targetPort: 9001
-      name: http-admin       
-  selector:
-    app.kubernetes.io/name: minio
-  type: ClusterIP 
+global:
+  tolerations:
+  - key: "node-role"
+    operator: "Equal"
+    value: "infra"
+    effect: "NoSchedule"
+  affinity: 
+    nodeAffinity:
+      requiredDuringSchedulingIgnoredDuringExecution:
+        nodeSelectorTerms:
+        - matchExpressions:
+          - key: role
+            operator: In
+            values:
+            - infra
+controller:
+  tolerations:
+  - key: "node-role"
+    operator: "Equal"
+    value: "infra"
+    effect: "NoSchedule"
+  affinity: 
+    nodeAffinity:
+      requiredDuringSchedulingIgnoredDuringExecution:
+        nodeSelectorTerms:
+        - matchExpressions:
+          - key: role
+            operator: In
+            values:
+            - infra
+dex: 
+  tolerations:
+  - key: "node-role"
+    operator: "Equal"
+    value: "infra"
+    effect: "NoSchedule"
+  affinity: 
+    nodeAffinity:
+      requiredDuringSchedulingIgnoredDuringExecution:
+        nodeSelectorTerms:
+        - matchExpressions:
+          - key: role
+            operator: In
+            values:
+            - infra
+redis:
+  tolerations:
+  - key: "node-role"
+    operator: "Equal"
+    value: "infra"
+    effect: "NoSchedule"
+  affinity: 
+    nodeAffinity:
+      requiredDuringSchedulingIgnoredDuringExecution:
+        nodeSelectorTerms:
+        - matchExpressions:
+          - key: role
+            operator: In
+            values:
+            - infra
+server:
+  tolerations:
+  - key: "node-role"
+    operator: "Equal"
+    value: "infra"
+    effect: "NoSchedule"
+  affinity: 
+    nodeAffinity:
+      requiredDuringSchedulingIgnoredDuringExecution:
+        nodeSelectorTerms:
+        - matchExpressions:
+          - key: role
+            operator: In
+            values:
+            - infra
+repoServer:
+  tolerations:
+  - key: "node-role"
+    operator: "Equal"
+    value: "infra"
+    effect: "NoSchedule"
+  affinity: 
+    nodeAffinity:
+      requiredDuringSchedulingIgnoredDuringExecution:
+        nodeSelectorTerms:
+        - matchExpressions:
+          - key: role
+            operator: In
+            values:
+            - infra
+applicationSet:
+  tolerations:
+  - key: "node-role"
+    operator: "Equal"
+    value: "infra"
+    effect: "NoSchedule"
+  affinity: 
+    nodeAffinity:
+      requiredDuringSchedulingIgnoredDuringExecution:
+        nodeSelectorTerms:
+        - matchExpressions:
+          - key: role
+            operator: In
+            values:
+            - infra
+notifications:
+  tolerations:
+  - key: "node-role"
+    operator: "Equal"
+    value: "infra"
+    effect: "NoSchedule"
+  affinity: 
+    nodeAffinity:
+      requiredDuringSchedulingIgnoredDuringExecution:
+        nodeSelectorTerms:
+        - matchExpressions:
+          - key: role
+            operator: In
+            values:
+            - infra
 
 ```
 
 
-Разворачиваем
+
+
 
 
 ```
-kubectl apply -f ./minio/deployment.yaml
-```
-
-```
-kubectl get po,svc -n storage-minio
+cd argocd
 ```
 
 
-![](img/2025-09-19_10-19.png)
+
+```
+helmfile apply
+```
+
+
+
+
+```
+kubectl get po,svc
+```
+
+
+![](img/2025-09-24_18-27.png)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
