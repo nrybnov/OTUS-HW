@@ -1,0 +1,12 @@
+---
+repositories:
+- name: argo-helm
+  url: https://argoproj.github.io/argo-helm
+
+releases:
+- name: argocd
+  namespace: default
+  chart: argo-helm/argo-cd
+  version: 7.1.0
+  values: 
+    - values.yaml

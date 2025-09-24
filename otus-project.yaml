@@ -1,0 +1,29 @@
+metadata:
+  creationTimestamp: "2025-09-24T11:00:29Z"
+  generation: 7
+  managedFields:
+  - apiVersion: argoproj.io/v1alpha1
+    fieldsType: FieldsV1
+    fieldsV1:
+      f:spec:
+        .: {}
+        f:description: {}
+        f:destinations: {}
+        f:sourceRepos: {}
+      f:status: {}
+    manager: argocd-server
+    operation: Update
+    time: "2025-09-24T11:16:50Z"
+  name: otus
+  namespace: default
+  resourceVersion: "2127609"
+  uid: 2f610db6-47f4-4e09-a68b-2eb51570967b
+spec:
+  description: Homework 10
+  destinations:
+  - name: '*'
+    namespace: '*'
+    server: https://kubernetes.default.svc
+  sourceRepos:
+  - git@github.com:nrybnov/OTUS.git
+status: {}
