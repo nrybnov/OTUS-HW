@@ -67,11 +67,6 @@ kubectl taint node k8s-w002 node-role=infra:NoSchedule
 ```
 
 
-```
-kubectl get node -o wide --show-labels
-```
-
-![](img/2025-09-19_09-41.png)
 
 
 ```
@@ -79,7 +74,7 @@ kubectl get nodes -o custom-columns=NAME:.metadata.name,TAINTS:.spec.taints
 ```
 
 
-![](img/2025-09-19_09-41_1.png)
+![](img/2025-09-24_18-19.png)
 
 
 
