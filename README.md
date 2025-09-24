@@ -253,24 +253,52 @@ kubectl get pod -o=custom-columns=NAME:.metadata.name,STATUS:.status.phase,NODE:
 
 
 
-
-
-
-
-
-
-
-Подключаемся с пробросом порта на порт админки minio
+Подключаемся с пробросом порта на порт argocd-server
 
 ```
-ssh root@192.168.15.101 -L 9001:minio.storage-minio.svc.cluster.local:9001 
+ssh root@192.168.15.101 -L 8080:argocd-server.default.svc.cluster.local:80 
 ```
 
 
 
-Создаем бакет
+Вынимаем пароль admin
 
-![](img/2025-09-19_11-38.png)
+```
+kubectl get secret argocd-initial-admin-secret -o jsonpath="{.data.password}" | base64 --decode ; echo
+```
+
+
+
+Заходим в веб интерфейс админки, создаем профиль otus
+
+![](img/2025-09-24_18-40.png)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
