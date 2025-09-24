@@ -236,8 +236,15 @@ kubectl get po,svc
 
 
 
+Проверяем что argocd запустились на infra ноде:
 
 
+```
+kubectl get pod -o=custom-columns=NAME:.metadata.name,STATUS:.status.phase,NODE:.spec.nodeName --all-namespaces | grep  k8s-w002
+```
+
+
+![](img/2025-09-24_18-32.png)
 
 
 
