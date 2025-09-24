@@ -276,9 +276,17 @@ kubectl get secret argocd-initial-admin-secret -o jsonpath="{.data.password}" | 
 
 
 
+Далее идем к контейнер argocd-server и выполняем  команды в консоли:
 
-
-
+```
+kubectl exec -it service/argocd-server -- /bin/bash
+# Авторизация
+argocd login localhost:8080
+# Список проектов
+argocd proj list
+# Подробная информация о проекте в yaml-формате для добавления в файл otus-project.yaml
+argocd proj get otus -o yaml
+```
 
 
 
