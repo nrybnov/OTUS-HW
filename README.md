@@ -276,7 +276,7 @@ kubectl get secret argocd-initial-admin-secret -o jsonpath="{.data.password}" | 
 
 
 
-Далее идем к контейнер argocd-server и выполняем  команды в консоли:
+Далее идем в контейнер argocd-server и выполняем  команды в консоли:
 
 ```
 kubectl exec -it service/argocd-server -- /bin/bash
