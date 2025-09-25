@@ -291,7 +291,7 @@ argocd proj get otus -o yaml
 
 
 
-Создаем папку kubernetes-networks в ветке проекта, и копирем туда файлы из ДЗ 03.kubernetes-networks.
+Создаем папку kubernetes-networks в ветке проекта, и копируем туда файлы из ДЗ 03.kubernetes-networks.
 
 
 Чтобы приложение kubernetes-networks развернулось, необходимо присвоить ноде метку:
@@ -336,20 +336,44 @@ kubectl get po -n homework
 
 
 
+Создаем папку kubernetes-templating в ветке проекта, и копируем туда файлы из ДЗ 06.kubernetes-templating/homework-06.
+
+В веб интерфейсе Argocd добавляем новое приложение kubernetes-templating, применяя требуемые values.
+
+
+![](img/2025-09-25_11-41.png)
+
+![](img/2025-09-25_11-56.png)
+
+Запускаем синхронизацию приложения kubernetes-templating.
+
+
+![](img/2025-09-25_11-58.png)
 
 
 
 
+Проверяем
+
+```
+kubectl get po,svc -n homework
+```
+
+![](img/2025-09-25_12-01.png)
+
+
+```
+kubectl get po,svc -n homework-helm
+```
+
+![](img/2025-09-25_12-02.png)
 
 
 
+Манифест, описывающий установку приложения kubernetes-templating
 
 
-
-
-
-
-
+![](img/2025-09-25_12-00.png)
 
 
 
