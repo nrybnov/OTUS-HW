@@ -79,7 +79,7 @@ kubectl get nodes -o custom-columns=NAME:.metadata.name,TAINTS:.spec.taints
 
 
 
-Устанавливаем Argocd хельм чартом
+Устанавливаем Argocd хельм чарт
 
 
 values.yaml: 
