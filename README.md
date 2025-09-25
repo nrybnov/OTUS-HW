@@ -291,6 +291,45 @@ argocd proj get otus -o yaml
 
 
 
+Создаем папку kubernetes-networks в ветке проекта, и копирем туда файлы из ДЗ 03.kubernetes-networks.
+
+
+Чтобы приложение kubernetes-networks развернулось, необходимо присвоить ноде метку:
+
+```
+kubectl label nodes k8s-w001 homework=true
+```
+
+
+В веб интерфейсе Argocd добавляем новое приложение kubernetes-networks.
+
+
+![](img/2025-09-24_18-55.png)
+
+
+Запускаем синхронизацию приложения kubernetes-networks.
+
+
+![](img/2025-09-24_22-06.png)
+
+
+
+
+
+Проверяем
+
+```
+kubectl get po -n homework
+```
+
+![](img/2025-09-24_22-06_1.png)
+
+
+
+ Манифест, описывающий установку приложения
+
+
+![](img/2025-09-25_09-26.png)
 
 
 
@@ -311,9 +350,16 @@ argocd proj get otus -o yaml
 
 
 
-Создаем ключи
 
-![](img/2025-09-19_11-41.png)
+
+
+
+
+
+
+
+
+
 
 
 

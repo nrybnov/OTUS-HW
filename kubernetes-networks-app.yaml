@@ -1,0 +1,8 @@
+project: otus
+source:
+  repoURL: 'https://github.com/nrybnov/OTUS-HW.git'
+  path: kubernetes-networks
+  targetRevision: 10.kubernetes-gitops
+destination:
+  server: 'https://kubernetes.default.svc'
+  namespace: homework
