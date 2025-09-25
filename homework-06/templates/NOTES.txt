@@ -1,0 +1,41 @@
+1. Get the application URL by running these commands:
+{{- if .Values.ingress.enabled }}
+
+
+
+{{- range $host := .Values.ingress.hosts }}
+
+  echo $(kubectl describe nodes | grep -w InternalIP | awk '{print $2"  {{ $host.host }}"}' >> /etc/hosts) 
+
+{{- end }}
+
+
+{{- range $host := .Values.ingress.hosts }}
+  {{- range .paths }}
+  
+  http{{ if $.Values.ingress.tls }}s{{ end }}://{{ $host.host }}{{ .path }}
+  
+  _
+  {{- end }}
+{{- end }}
+
+
+
+
+
+{{- else if contains "NodePort" .Values.Service.type }}
+  export NODE_PORT=$(kubectl get --namespace {{ .Values.namespace.name }} -o jsonpath="{.spec.ports[0].nodePort}" services {{ include "homework-06.fullname" . }})
+  export NODE_IP=$(kubectl get nodes --namespace {{ .Values.namespace.name }} -o jsonpath="{.items[0].status.addresses[0].address}")
+  echo http://$NODE_IP:$NODE_PORT
+{{- else if contains "LoadBalancer" .Values.Service.type }}
+     NOTE: It may take a few minutes for the LoadBalancer IP to be available.
+           You can watch its status by running 'kubectl get --namespace {{ .Values.namespace.name }} svc -w {{ include "homework-06.fullname" . }}'
+  export SERVICE_IP=$(kubectl get svc --namespace {{ .Values.namespace.name }} {{ include "homework-06.fullname" . }} --template "{{"{{ range (index .status.loadBalancer.ingress 0) }}{{.}}{{ end }}"}}")
+  echo http://$SERVICE_IP:{{ .Values.Service.port }}
+{{- else if contains "ClusterIP" .Values.Service.type }}
+  export POD_NAME=$(kubectl get pods --namespace {{ .Values.namespace.name }} -l "app.kubernetes.io/name={{ .Values.Deployment.name }}" -o jsonpath="{.items[0].metadata.name}")
+  export CONTAINER_PORT=$(kubectl get pod --namespace {{ .Values.namespace.name }} $POD_NAME -o jsonpath="{.spec.containers[0].ports[0].containerPort}")
+  
+  kubectl --namespace {{ .Values.namespace.name }} port-forward $POD_NAME 8080:$CONTAINER_PORT
+  Visit http://127.0.0.1:8080 to use your application
+{{- end }}

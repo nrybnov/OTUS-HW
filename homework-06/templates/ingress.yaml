@@ -1,0 +1,68 @@
+
+ 
+{{- if .Values.ingress.enabled }} 
+
+---
+apiVersion: networking.k8s.io/v1 
+kind: Ingress
+metadata:
+  name: {{ .Values.Deployment.name }}
+  namespace: {{ .Values.namespace.name }}
+  annotations:
+    kubernetes.io/ingress.class: "nginx"
+    nginx.ingress.kubernetes.io/configuration-snippet: |
+      rewrite ^/index.html /homepage permanent;
+spec:
+  rules:
+  
+  - host: {{ .Values.ingress.hostnames.value1 }}
+    http:
+      paths:
+      - pathType: Prefix
+        path: {{ .Values.ingress.SubPaths.value1 }}
+        backend:
+          service:
+            name: {{ .Values.ingress.serviceName.value1 }}
+            port:
+              number: {{ .Values.ingress.servicePorts.value1 }}
+  - host: {{ .Values.ingress.hostnames.value1 }}
+    http:
+      paths:
+      - pathType: Prefix
+        path: {{ .Values.ingress.SubPaths.value2 }}
+        backend:
+          service:
+            name: {{ .Values.ingress.serviceName.value1 }}
+            port:
+              number: {{ .Values.ingress.servicePorts.value1 }}
+              
+  - host: {{ .Values.ingress.hostnames.value1 }}
+    http:
+      paths:
+      - pathType: Prefix
+        path: {{ .Values.ingress.SubPaths.value3 }}
+        backend:
+          service:
+            name: {{ .Values.ingress.serviceName.value1 }}
+            port:
+              number: {{ .Values.ingress.servicePorts.value1 }}
+              
+  - host: {{ .Values.ingress.hostnames.value1 }}
+    http:
+      paths:
+      - pathType: Prefix
+        path: {{ .Values.ingress.SubPaths.value4 }}
+        backend:
+          service:
+            name: {{ .Values.ingress.serviceName.value1 }}
+            port:
+              number: {{ .Values.ingress.servicePorts.value1 }}
+              
+
+
+
+
+  ingressClassName: nginx
+
+
+{{- end }}
