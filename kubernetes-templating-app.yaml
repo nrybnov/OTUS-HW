@@ -1,0 +1,22 @@
+project: otus
+source:
+  repoURL: 'https://github.com/nrybnov/OTUS-HW.git'
+  path: kubernetes-templating
+  targetRevision: 10.kubernetes-gitops
+  helm:
+    parameters:
+      - name: Deployment.replicaCount
+        value: '1'
+      - name: ingress.enabled
+        value: 'false'
+      - name: namespace.labels
+        value: homework-helm
+      - name: namespace.name
+        value: homework-helm
+destination:
+  server: 'https://kubernetes.default.svc'
+  namespace: homework-helm
+syncPolicy:
+  automated:
+    prune: true
+    selfHeal: true

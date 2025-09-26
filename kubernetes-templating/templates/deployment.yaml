@@ -1,0 +1,104 @@
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Values.Deployment.name }}
+  namespace: {{ .Values.namespace.name }}
+  labels:
+    {{ .Values.Deployment.labels.key }}: {{ .Values.Deployment.labels.value }}
+spec:
+  replicas: {{ .Values.Deployment.replicaCount }}
+  strategy:
+    type: {{ .Values.Deployment.strategy.type }}
+    rollingUpdate:
+      maxUnavailable: {{ .Values.Deployment.strategy.maxUnavailable }}
+      maxSurge: {{ .Values.Deployment.strategy.maxSurge }}
+  selector:
+    matchLabels:
+       {{ .Values.Deployment.selector.key }}: {{ .Values.Deployment.selector.value }}
+  template:
+    metadata:
+      labels:
+        {{ .Values.Deployment.labels.key }}: {{ .Values.Deployment.labels.value }}
+    spec:
+      serviceAccountName: {{ .Values.SaMonitoringAccount.name }}
+      nodeSelector:
+        {{ .Values.Deployment.nodeSelector.key }}: {{ .Values.Deployment.nodeSelector.value }}
+      tolerations:
+      - key: {{ .Values.Deployment.tolerations.key }}
+        operator: {{ .Values.Deployment.tolerations.operator }}
+        effect: {{ .Values.Deployment.tolerations.effect }}
+      initContainers:
+        - name: {{ .Values.Deployment.initContainers.names.value1 }}
+          image: {{ .Values.Deployment.initContainers.image.repository }}{{ .Values.Deployment.initContainers.image.tag }}
+          command: ['sh', '-c', "echo '<html><center><h1>Homework06</h1></center><html>' > /init/index.html && touch /init/metrics.html"]
+          volumeMounts:
+            - name: {{ .Values.Deployment.initContainers.volumeMounts.name1 }}
+              mountPath: {{ .Values.Deployment.initContainers.volumeMounts.path1 }}
+              
+        - name: {{ .Values.Deployment.initContainers.names.value2 }}
+          image: {{ .Values.Deployment.initContainers.image.repository }}{{ .Values.Deployment.initContainers.image.tag }}
+          command: ['sh', '-c', "/init/create-token.sh && sleep 3"]
+          env:
+            - name: SERVICEACCOUNTNAME
+              value: {{ .Values.SaMonitoringAccount.name }}
+            - name: NAMESPACE
+              value: {{ .Values.namespace.name }}
+      containers:
+        - name: {{ .Values.Deployment.Containers.names.value }}
+          image: {{ .Values.Deployment.Containers.image.repository }}{{ .Values.Deployment.Containers.image.tag }} 
+          volumeMounts:
+            - name: {{ .Values.Deployment.Containers.volumeMounts.name1 }} 
+              mountPath: {{ .Values.Deployment.Containers.volumeMounts.path1 }}
+            - name: {{ .Values.Deployment.Containers.volumeMounts.name2 }}
+              mountPath: {{ .Values.Deployment.Containers.volumeMounts.path2 }}
+            - name: {{ .Values.Deployment.Containers.volumeMounts.name3 }}
+              mountPath: {{ .Values.Deployment.Containers.volumeMounts.path3 }}
+              readOnly: true
+{{- if .Values.Deployment.Containers.readinessProbe.enabled }}
+          readinessProbe:
+            httpGet:
+              path: {{ .Values.Deployment.Containers.readinessProbe.httpGet.path }}
+              port: {{ .Values.Deployment.Containers.readinessProbe.httpGet.port }}
+            initialDelaySeconds: {{ .Values.Deployment.Containers.readinessProbe.initialDelaySeconds }}
+            periodSeconds: {{ .Values.Deployment.Containers.readinessProbe.periodSeconds }} 
+{{- end }}
+{{- if .Values.Deployment.Containers.lifecycle.enabled }}  
+          lifecycle:
+            preStop:
+              exec:
+                command: ["/bin/sh", "-c", "rm -rf /homework/*"]
+{{- end }}      
+          ports:
+            - containerPort: {{ .Values.Deployment.Containers.ports.containerPort }}
+              name: {{ .Values.Deployment.Containers.ports.name }}
+              
+      volumes:
+        - name: {{ .Values.Deployment.Containers.volumeMounts.name1 }}
+          persistentVolumeClaim:
+            claimName: {{ .Values.PersistentVolumeClaim.name }}
+        - name: {{ .Values.Deployment.Containers.volumeMounts.name2 }}
+          configMap:
+            name: web-nginx-configmap       
+        - name: {{ .Values.Deployment.Containers.volumeMounts.name3 }}
+          configMap:
+            name: test-web-configmap      
+            
+              
+              
+              
+              
+              
+            
+              
+ 
+
+
+
+
+
+
+
+
+
+ 

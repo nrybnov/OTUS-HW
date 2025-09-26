@@ -1,0 +1,37 @@
+metadata:
+  creationTimestamp: "2025-09-24T11:00:29Z"
+  generation: 10
+  managedFields:
+  - apiVersion: argoproj.io/v1alpha1
+    fieldsType: FieldsV1
+    fieldsV1:
+      f:spec:
+        .: {}
+        f:clusterResourceWhitelist: {}
+        f:description: {}
+        f:destinations: {}
+        f:namespaceResourceWhitelist: {}
+        f:sourceRepos: {}
+      f:status: {}
+    manager: argocd-server
+    operation: Update
+    time: "2025-09-24T15:01:06Z"
+  name: otus
+  namespace: default
+  resourceVersion: "2164403"
+  uid: 2f610db6-47f4-4e09-a68b-2eb51570967b
+spec:
+  clusterResourceWhitelist:
+  - group: '*'
+    kind: '*'
+  description: Homework 10
+  destinations:
+  - name: '*'
+    namespace: '*'
+    server: https://kubernetes.default.svc
+  namespaceResourceWhitelist:
+  - group: '*'
+    kind: '*'
+  sourceRepos:
+  - https://github.com/nrybnov/OTUS-HW.git
+status: {}
