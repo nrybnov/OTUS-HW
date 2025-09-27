@@ -264,15 +264,19 @@ vault read auth/kubernetes/role/otus
 
 
 
+Устанавливаем external-secrets
+
+```
+cd charts
+helm install external-secrets external-secrets-0.20.1.tgz -n vault
+```
+
+```
+kubectl get pod -n vault
+```
 
 
-
-
-
-
-
-
-
+![](img/2025-09-27_17-20.png)
 
 
 
