@@ -54,11 +54,99 @@ username и password, со значениями, которые были сох�
 
 
 
-Для инфраструктурной ноды выбираем вторую воркер ноду, k8s-w002, и добавляем taint, запрещающий на нее планирование подов с посторонней нагрузкой.
+Убираем taint с ноды k8s-w002, оставшийся с прошлых ДЗ.
 
 ```
-kubectl taint node k8s-w002 node-role=infra:NoSchedule
+kubectl taint node k8s-w002 node-role=infra:NoSchedule-
 ```
+
+
+
+
+Пулим через vpn helm чарты consul,  external-secrets, vault и кладем их в каталог charts
+
+Устанавливаем consul и vault
+
+```
+cd charts
+kubectl create ns consul
+helm install consul consul-1.4.3.tgz --set global.name=consul --set server.replicas=3 -n consul
+```
+
+```
+kubectl get po -n consul
+```
+![](img/2025-09-27_15-11.png)
+
+
+```
+cd ../vault
+```
+
+values.yaml:
+```
+---
+server:
+   ha:
+    enabled: true
+    replicas: 3
+    config: |
+      ui = true
+
+      listener "tcp" {
+        tls_disable = 1
+        address = "[::]:8200"
+      }
+      storage "consul" {
+        address = "consul-server.consul:8500"
+        path = "vault"
+      }
+
+      service_registration "kubernetes" {}
+
+```
+
+
+
+```
+helmfile apply
+```
+
+
+
+```
+kubectl get po -n vault
+```
+![](img/2025-09-27_15-11_1.png)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
