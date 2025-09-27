@@ -169,6 +169,101 @@ ssh root@192.168.15.101 -L 8200:vault.vault.svc.cluster.local:8200
 
 
 
+Для создания сервисного аккаунта и роли создаем манифест sa.yaml:
+
+```
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: vault-auth
+  namespace: vault
+  
+  
+  
+  
+---
+
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: vault-auth-crb
+subjects:
+  - kind: ServiceAccount
+    name: vault-auth
+    namespace: vault
+roleRef:
+  kind: ClusterRole
+  name: admin
+  apiGroup: rbac.authorization.k8s.io
+```
+
+
+
+```
+kubectl apply -f ./sa.yaml
+```
+
+
+
+Включение аутентификации через k8s
+
+
+```
+kubectl exec -it vault-0 -n vault -- /bin/sh
+vault login
+vault auth enable kubernetes
+
+vault write auth/kubernetes/config \
+token_reviewer_jwt="$(cat /var/run/secrets/kubernetes.io/serviceaccount/token)" \
+kubernetes_host="https://$KUBERNETES_PORT_443_TCP_ADDR:443" \
+kubernetes_ca_cert=@/var/run/secrets/kubernetes.io/serviceaccount/ca.crt
+```
+
+
+
+Создание и применение политики otus-policy для секретов /otus/cred
+
+```
+vault policy write otus-policy - <<EOH
+path "otus/data/cred" {
+  capabilities = ["read", "list"]
+}
+EOH
+```
+
+
+![](img/2025-09-27_17-01.png)
+
+![](img/2025-09-27_17-01_1.png)
+
+
+Скачиваем файл .hcl с политикой и прикладываем к результатам ДЗ.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
