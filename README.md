@@ -280,6 +280,108 @@ kubectl get pod -n vault
 
 
 
+Создание SecretStore:
+
+SecretStore.yaml:
+
+```
+---
+apiVersion: external-secrets.io/v1
+kind: SecretStore
+metadata:
+  name: otus
+  namespace: vault
+spec:
+  retrySettings:
+    maxRetries: 5
+    retryInterval: "10s"
+  provider:
+    vault:
+      server: "http://vault.vault:8200"
+      path: "otus"
+      version: "v2"
+      namespace: "vault"
+      auth:
+        kubernetes:
+          mountPath: "kubernetes"
+          role: "otus"
+          serviceAccountRef:
+            name: "vault-auth"
+
+```
+
+
+
+```
+kubectl apply -f SecretStore.yaml
+kubectl get secretstores -n vault
+```
+
+
+![](img/2025-09-27_18-09.png)
+
+
+
+
+
+Создадим и применим манифест crd объекта ExternalSecret
+
+ExternalSecret.yaml:
+
+```
+---
+apiVersion: external-secrets.io/v1
+kind: ExternalSecret
+metadata:
+  name: otus
+  namespace: vault
+spec:
+  refreshInterval: 1h           
+  secretStoreRef:
+    kind: SecretStore
+    name: otus   
+  target:
+    name: otus-cred
+    creationPolicy: Owner
+  dataFrom:
+  - extract:
+      key: cred
+
+```
+
+
+
+
+```
+kubectl apply -f ExternalSecret.yaml
+```
+
+
+```
+kubectl get secretstores -n vault
+```
+![](img/2025-09-27_18-19.png)
+
+
+
+
+
+```
+kubectl get secret otus-cred -n vault -o jsonpath="{.data.username}" | base64 --decode ; echo
+```
+
+![](img/2025-09-27_18-19_1.png)
+
+
+
+```
+kubectl get secret otus-cred -n vault -o jsonpath="{.data.password}" | base64 --decode ; echo
+```
+
+![](img/2025-09-27_18-20.png)
+
+
+
 
 
 
