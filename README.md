@@ -241,13 +241,26 @@ EOH
 Скачиваем файл .hcl с политикой и прикладываем к результатам ДЗ.
 
 
+Создание роли:
+
+```
+kubectl exec -it vault-0 -n vault -- /bin/sh
+vault login
+vault write auth/kubernetes/role/otus \
+bound_service_account_names=vault-auth \
+bound_service_account_namespaces=vault \
+policies=otus-policy \
+ttl=72h
 
 
+```
+
+```
+vault read auth/kubernetes/role/otus
+```
 
 
-
-
-
+![](img/2025-09-27_17-12.png)
 
 
 
