@@ -324,7 +324,7 @@ kubectl get secretstores -n vault
 
 
 
-Создадим и применим манифест crd объекта ExternalSecret
+Создадим и применим манифест crd объекта ExternalSecret с требуемыми параметрами:
 
 ExternalSecret.yaml:
 
