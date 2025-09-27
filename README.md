@@ -123,24 +123,48 @@ kubectl get po -n vault
 
 
 
+Далее необходимо выполнить инициализацию vault:
+
+```
+kubectl exec -it vault-0 -n vault -- /bin/sh
+vault operator init --key-shares=1 --key-threshold=1
+```
+![](img/2025-09-27_15-06.png)
+
+Unseal Key и Initial Root Token нужно сохранить.
 
 
 
 
+```
+vault operator unseal
+```
+![](img/2025-09-27_15-06_1.png)
+
+
+На всех остальных подах vault тоже нужно выполнить команду vault operator unseal, введя Unseal Key.
+
+
+Создаем хранилище секретов otus, с требованиями указанными в задании
+```
+kubectl exec -it vault-0 -n vault -- /bin/sh
+vault login
+vault secrets enable -path otus/ kv-v2
+vault kv put otus/cred 'username=otus'
+vault kv patch otus/cred 'password=asajkjkahs'
+```
+
+
+Чтобы зайти в веб-интерфейс, подключаемся к ноде по ssh с пробросом порта
+```
+ssh root@192.168.15.101 -L 8200:vault.vault.svc.cluster.local:8200
+```
+
+![](img/2025-09-27_16-47.png)
 
 
 
-
-
-
-
-
-
-
-
-
-
-
+![](img/2025-09-27_16-48.png)
 
 
 
