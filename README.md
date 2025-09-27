@@ -358,7 +358,7 @@ kubectl apply -f ExternalSecret.yaml
 
 
 ```
-kubectl get secretstores -n vault
+kubectl get secrets -n vault
 ```
 ![](img/2025-09-27_18-19.png)
 
