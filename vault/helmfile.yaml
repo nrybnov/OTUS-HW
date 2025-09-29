@@ -1,0 +1,8 @@
+---
+
+releases:
+- name: vault
+  namespace: vault
+  chart: ../charts/vault-0.28.0.tgz
+  values: 
+    - values.yaml
