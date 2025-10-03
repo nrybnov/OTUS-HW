@@ -36,7 +36,93 @@
 Т.к. для ДЗ на моем стенде развернут k8s с пятью нодами, сервисы Яндекса использоваться не будут.
 
 
-![](img/2025-09-19_09-06.png)
+![](img/2025-10-03_17-08.png)
+
+
+
+Под s3 хранилище, будем использовать развернутый в ДЗ-9 minio
+
+
+Установим хельм чартом ctrox-csi-s3.
+ctrox-csi-s3 — это драйвер CSI, который позволяет монтировать бакеты S3-хранилища как файловые системы внутри подов Kubernetes.
+Так объекты в бакетах становятся доступными для приложений внутри кластера, и для этого не нужно вносить изменения в код.
+
+
+```
+cd csi-s3
+```
+
+
+values.yaml:
+
+```
+attacher:
+  image:
+    repository: quay.io/k8scsi/csi-attacher
+    pullPolicy: IfNotPresent
+    tag: v3.0.0
+
+
+
+secret:
+  create: true
+  name: csi-s3-secret
+  accessKey: "9sNsXcpFYTn8iPnAg1fZ"
+  secretKey: "pTisyLKyJxWW7a1FeS8P4K2crGLHdkugP8AmkL1J"
+  endpoint: http://minio.minio02.svc.cluster.local:9000
+
+
+storageClass:
+  create: true
+  name: csi-s3
+  # Either s3fs, rclone, goofys or s3backer
+  mounter: s3fs
+  bucket: ""
+  reclaimPolicy: Delete
+  annotations: {}
+  usePrefix:
+  prefix:
+  ignorePrefixErrors:
+
+```
+
+
+
+```
+helmfile apply
+```
+
+
+```
+kubectl get po -n kube-system | grep csi
+```
+
+![](img/2025-10-03_17-20.png)
+
+
+
+
+```
+kubectl get sc
+```
+
+
+![](img/2025-10-03_17-20_1.png)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
