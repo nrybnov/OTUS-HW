@@ -139,37 +139,58 @@ kubectl debug -it -c debugger --image=busybox:latest --target=web web
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 Для запуска tcpdump используем другой образ:
 
+```
 kubectl debug -it -c debugger-tcpdump --image=nicolaka/netshoot:latest --target=web web
+```
 
+
+```
 tcpdump -nn -i any -e port 80
+```
 
 
 
+![](img/2025-10-06_18-55.png)
 
+
+
+Отладка ноды:
+
+Определяем ноду на которой развернут под
+
+
+```
 kubectl describe po web | grep "Node:"
+```
+
+![](img/2025-10-06_18-59.png)
+
+
 kubectl debug node/k8s-w004 -it --image=busybox:latest
 
-cat /host/var/log/pods/default_web_2bc51dc7-dc79-4b82-bbd3-7622f0b7e4b4/web/0.log
+```
+/ # cat /host/var/log/pods/default_web_2bc51dc7-dc79-4b82-bbd3-7622f0b7e4b4/web/0.log
+```
+
+![](img/2025-10-06_19-02.png)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
