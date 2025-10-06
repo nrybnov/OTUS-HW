@@ -206,7 +206,61 @@ kubectl debug node/k8s-w004 -it --image=busybox:latest
 
 <details>
   <summary>Решение:</summary>
-
+  
+  
+  Для корректной работы strace необходимо добавить --profile:
+  
+ 
+  
+```
 kubectl debug -it -c debugger-strace --profile=general --image=nicolaka/netshoot:latest --target=web web
+```
+
+Далее в отладочном контейнере:
+
+```
+/ # ps aux
+```
+
+![](img/2025-10-06_19-41.png)
+
+
+```
+/ # strace -ff -v -p 1
+```
+
+![](img/2025-10-06_19-37.png)
+
+
+После выполнения команды нужно обновить страницу
+
+
+
+
+
+```
+/ # strace -ff -v -p 7
+```
+
+![](img/2025-10-06_19-37_1.png)
+
+
+
+Отправляем запрос curl
+
+```
+curl http://127.0.0.1:8080
+```
+
+![](img/2025-10-06_19-36.png)
+
+
+
+
+
+
+
+
+
 
 </details>
