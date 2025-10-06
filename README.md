@@ -168,7 +168,10 @@ kubectl describe po web | grep "Node:"
 ![](img/2025-10-06_18-59.png)
 
 
+```
 kubectl debug node/k8s-w004 -it --image=busybox:latest
+```
+
 
 ```
 / # cat /host/var/log/pods/default_web_2bc51dc7-dc79-4b82-bbd3-7622f0b7e4b4/web/0.log
