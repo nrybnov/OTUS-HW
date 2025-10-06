@@ -168,6 +168,10 @@ kubectl describe po web | grep "Node:"
 ![](img/2025-10-06_18-59.png)
 
 
+
+
+Создаем отладочный под для ноды
+
 ```
 kubectl debug node/k8s-w004 -it --image=busybox:latest
 ```
