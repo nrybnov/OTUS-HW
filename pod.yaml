@@ -8,10 +8,10 @@ spec:
    - name: csi-s3-test-nginx
      image: nginx:latest
      volumeMounts:
-       - mountPath: /usr/share/nginx/html/s3
-         name: webtest
+       - mountPath: /data
+         name: data
   volumes:
-   - name: webtest
+   - name: data
      persistentVolumeClaim:
        claimName: csi-s3-pvc
        readOnly: false
