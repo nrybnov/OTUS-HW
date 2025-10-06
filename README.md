@@ -125,11 +125,39 @@ kubectl get sc
 
 
 
+Далее идем в контейнер csi-s3-test-nginx и выполняем команды в консоли:
 
-
-
-
+```
+kubectl exec -ti csi-s3-test-nginx -- /bin/bash
 touch  /data/test{1,2,3,4,5,6,7,8,9,10}
+ls /data/
+```
+
+
+![](img/2025-10-06_13-44.png)
+
+
+
+
+![](img/2025-10-03_17-54.png)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
