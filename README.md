@@ -119,6 +119,55 @@ kubectl get sc
 ![](img/2025-10-03_17-20_1.png)
 
 
+Манифест PVC, использующий для хранения созданный storageClass csi-s3
+
+pvc.yaml:
+
+```
+---
+
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: csi-s3-pvc
+  namespace: default
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 200Mi
+  storageClassName: csi-s3
+``` 
+
+
+
+
+
+Манифест pod использующий созданый pvc
+
+pod.yaml:
+
+```
+apiVersion: v1
+kind: Pod
+metadata:
+  name: csi-s3-test-nginx
+  namespace: default
+spec:
+  containers:
+   - name: csi-s3-test-nginx
+     image: nginx:latest
+     volumeMounts:
+       - mountPath: /data
+         name: data
+  volumes:
+   - name: data
+     persistentVolumeClaim:
+       claimName: csi-s3-pvc
+       readOnly: false
+```
+
 
 
 
@@ -136,6 +185,9 @@ ls /data/
 
 ![](img/2025-10-06_13-44.png)
 
+
+
+Смотрим что файлы сохраняются в ObjectStorage:
 
 
 
