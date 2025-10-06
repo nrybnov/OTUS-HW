@@ -188,44 +188,6 @@ kubectl debug node/k8s-w004 -it --image=busybox:latest
 
 
 
-
-
-
-
-
-
-
-
-
-
-kubectl debug -it -c debugger-strace --profile=general --image=nicolaka/netshoot:latest --target=web web
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 </details>
 
 
@@ -241,66 +203,6 @@ kubectl debug -it -c debugger-strace --profile=general --image=nicolaka/netshoot
 <details>
   <summary>Решение:</summary>
 
-Устанавливаем nfs-subdir-external-provisioner
-```
-helm install second-nfs-subdir-external-provisioner nfs-subdir-external-provisioner/nfs-subdir-external-provisioner \
-    --set nfs.server=y.y.y.y \
-    --set nfs.path=/other/exported/path \
-    --set storageClass.name=second-nfs-client \
-    --set storageClass.provisionerName=k8s-sigs.io/second-nfs-subdir-external-provisioner \
-    --set storageClass.reclaimPolicy=Retain
-```
-
-
-
-
-```
-kubectl get sc
-```
-![](img/2025-08-22_13-58.png)
-
-
-
-Меняем в манифесте pvc.yaml storageClassName
-
-```
-apiVersion: v1
-kind: PersistentVolumeClaim
-metadata:
-  name: pvc001-web
-  namespace: homework
-spec:
-  accessModes:
-    - ReadWriteOnce
-  resources:
-    requests:
-      storage: 50Mi
-  storageClassName: "second-nfs-client"
-  
-```
-
-
-
-Применяем:
-```
-kubectl delete -f deployment.yaml -f pvc.yaml
-kubectl apply  -f pvc.yaml -f deployment.yaml
-```
-
-Проверяем:
-```
-kubectl get po -n homework
-```
-![](img/2025-08-22_14-13.png)
-```
-kubectl get pv
-```
-![](img/2025-08-22_14-13_1.png)
-
-```
-kubectl get pvc -n homework
-```
-![](img/2025-08-22_14-13_2.png)
-
+kubectl debug -it -c debugger-strace --profile=general --image=nicolaka/netshoot:latest --target=web web
 
 </details>
