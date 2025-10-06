@@ -232,7 +232,11 @@ kubectl debug -it -c debugger-strace --profile=general --image=nicolaka/netshoot
 ![](img/2025-10-06_19-37.png)
 
 
-После выполнения команды нужно обновить страницу
+Отправляем запрос curl
+
+```
+curl http://127.0.0.1:8080
+```
 
 
 
