@@ -1,0 +1,9 @@
+---
+
+releases:
+- name: ctrox-csi-s3
+  namespace: kube-system
+  chart: ./ctrox-csi-s3-0.1.0.tgz
+  values: 
+  - values.yaml
+

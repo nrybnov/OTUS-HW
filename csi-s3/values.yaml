@@ -1,0 +1,39 @@
+
+
+attacher:
+  image:
+    repository: quay.io/k8scsi/csi-attacher
+    pullPolicy: IfNotPresent
+    tag: v3.0.0
+
+
+
+secret:
+  create: true
+  name: csi-s3-secret
+  accessKey: "9sNsXcpFYTn8iPnAg1fZ"
+  secretKey: "pTisyLKyJxWW7a1FeS8P4K2crGLHdkugP8AmkL1J"
+  endpoint: http://minio.minio02.svc.cluster.local:9000
+
+
+storageClass:
+  create: true
+  name: csi-s3
+  # Either s3fs, rclone, goofys or s3backer
+  mounter: s3fs
+  bucket: ""
+  reclaimPolicy: Delete
+  annotations: {}
+  usePrefix:
+  prefix:
+  ignorePrefixErrors:
+
+
+
+
+
+
+
+
+
+
