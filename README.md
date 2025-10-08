@@ -754,7 +754,6 @@ upgrade_cluster.yaml:
 
 
 ```
-cd ../
 ansible-playbook -bi inventory.yml upgrade_cluster.yaml
 ```
 
@@ -774,6 +773,10 @@ kubectl get nodes -o wide
 
 
 
+Удаляем используемые ВМ:
+```
+vm/delete_vm.py vm/kubernetes-prod_delete_list.csv 
+```
 
 
 
@@ -785,9 +788,7 @@ kubectl get nodes -o wide
 
 
 
-
-
-
+ 
 
 
 
@@ -818,6 +819,85 @@ kubectl get nodes -o wide
 
 <details>
   <summary>Решение:</summary>
+  
+  
+Создаем ВМ для задания
+
+vm/kubernetes-prod_create_kubespray_list.csv:
+
+
+```
+# Имя манины,кол-во ядер CPU,RAM,образ OS,диски, через пробел(название=емкость=тип=формат),тип OS,сеть
+k8s-m001,2,8048,ubuntu-20.04-tmpl,"system=30=sata=qcow2",linux2022,"192.168.15.101"
+k8s-m002,2,8048,ubuntu-20.04-tmpl,"system=30=sata=qcow2",linux2022,"192.168.15.102"
+k8s-m003,2,8048,ubuntu-20.04-tmpl,"system=30=sata=qcow2",linux2022,"192.168.15.103"
+k8s-w001,2,8048,ubuntu-20.04-tmpl,"system=30=sata=qcow2",linux2022,"192.168.15.104"
+k8s-w002,2,8048,ubuntu-20.04-tmpl,"system=30=sata=qcow2",linux2022,"192.168.15.105"
+```
+
+
+```
+vm/create_vm.py vm/kubernetes-prod_create_list.csv 
+```
+
+
+Проверяем:
+
+```
+virsh list --all
+```
+
+![](img/2025-10-08_10-59.png)
+ 
+
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
   
   
  
