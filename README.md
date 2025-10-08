@@ -652,7 +652,25 @@ install_k8s_ubuntu.yml:
 ```
 
 
+Запускаем
 
+
+```
+cd ../
+ansible-playbook -bi inventory.yml k8s-cluster-deploy.yml
+```
+
+
+
+Проверяем
+
+
+```
+ssh root@192.168.15.101
+kubectl get nodes -o wide
+```
+
+![](img/2025-10-08_08-59.png)
 
 
 
