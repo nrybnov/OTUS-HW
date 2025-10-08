@@ -1,8 +1,5 @@
 - hosts: k8ss
   become: true
-  vars_files:
-    - group_vars/current.yaml
-
 
   tasks:
   
@@ -15,7 +12,18 @@
 
 
 
-  - name: "Upgrade kubernetes to 30"
+
+
+
+
+
+- hosts: k8ss:!k8s_w001:!k8s_w002:!k8s_w003
+  become: true
+
+  tasks:
+
+
+  - name: "Upgrade master node to 30"
     shell:  "{{item}}"      
     loop:
       - apt-mark unhold kubeadm
@@ -23,7 +31,20 @@
       - apt-get install -y kubeadm="1.30.3-*"
       - apt-mark hold kubeadm
       - kubeadm upgrade node
-      - kubectl drain --ignore-daemonsets $HOSTNAME 
+
+
+
+
+- hosts: k8ss:!k8s_m001
+  become: true
+
+  tasks:
+
+
+  - name: "Upgrade kubernetes to 30"
+    shell:  "{{item}}"      
+    loop:
+      - kubectl drain $HOSTNAME --ignore-daemonsets
       - apt-mark unhold kubelet kubectl
       - apt-get install -y kubelet="1.30.3-*" kubectl="1.30.3-*"
       - apt-mark hold kubelet kubectl
