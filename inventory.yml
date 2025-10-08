@@ -1,0 +1,46 @@
+---
+all:
+  children:
+    k8ss:
+      hosts:
+        k8s_m001:
+          ansible_host: 192.168.15.101
+          ansible_hn:  k8s-m001
+          ansible_user: root
+          ansible_password: 1234567
+        k8s_w001:
+          ansible_host: 192.168.15.102
+          ansible_hn:  k8s-w001
+          ansible_user: root
+          ansible_password: 1234567
+        k8s_w002:
+          ansible_host: 192.168.15.103
+          ansible_hn:  k8s-w002
+          ansible_user: root
+          ansible_password: 1234567
+        k8s_w003:
+          ansible_host: 192.168.15.104
+          ansible_hn:  k8s-w003
+          ansible_user: root
+          ansible_password: 1234567
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+#
+...

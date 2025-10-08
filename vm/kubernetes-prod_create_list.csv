@@ -1,0 +1,5 @@
+# Имя манины,кол-во ядер CPU,RAM,образ OS,диски, через пробел(название=емкость=тип=формат),тип OS,сеть
+k8s-m001,2,8048,ubuntu-20.04-tmpl,"system=30=sata=qcow2",linux2022,"192.168.15.101"
+k8s-w001,2,8048,ubuntu-20.04-tmpl,"system=30=sata=qcow2",linux2022,"192.168.15.102"
+k8s-w002,2,8048,ubuntu-20.04-tmpl,"system=30=sata=qcow2",linux2022,"192.168.15.103"
+k8s-w003,2,8048,ubuntu-20.04-tmpl,"system=30=sata=qcow2",linux2022,"192.168.15.104"

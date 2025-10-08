@@ -1,0 +1,523 @@
+
+
+
+- name: "Rename master"
+  hosts: k8ss:!k8s_w001:!k8s_w002:!k8s_w003
+  become: true
+  vars:
+    node_fqdn: "{{ hostvars['k8s_m001']['ansible_hn'] }}"
+
+  tasks:
+  
+  - name: "Rename k8s master {{ node_fqdn }}"
+    shell:
+      hostnamectl set-hostname {{ node_fqdn }}
+
+
+- name: "Rename worker"
+  hosts: k8ss:!k8s_m001:!k8s_w002:!k8s_w003
+  become: true
+  vars:
+    node_fqdn: "{{ hostvars['k8s_w001']['ansible_hn'] }}"
+
+  tasks:
+  
+  - name: "Rename k8s worker {{ node_fqdn }}"
+    shell:
+      hostnamectl set-hostname {{ node_fqdn }}
+
+
+- name: "Rename worker"
+  hosts: k8ss:!k8s_m001:!k8s_w001:!k8s_w003
+  become: true
+  vars:
+    node_fqdn: "{{ hostvars['k8s_w002']['ansible_hn'] }}"
+
+  tasks:
+  
+  - name: "Rename k8s worker {{ node_fqdn }}"
+    shell:
+      hostnamectl set-hostname {{ node_fqdn }}
+
+
+
+- name: "Rename worker"
+  hosts: k8ss:!k8s_m001:!k8s_w001:!k8s_w002
+  become: true
+  vars:
+    node_fqdn: "{{ hostvars['k8s_w003']['ansible_hn'] }}"
+
+  tasks:
+  
+  - name: "Rename k8s worker {{ node_fqdn }}"
+    shell:
+      hostnamectl set-hostname {{ node_fqdn }}
+
+
+
+
+
+
+
+
+
+
+
+- hosts: k8ss
+  become: true
+  vars_files:
+    - group_vars/current.yaml
+
+
+  tasks:
+
+  - name: "Add record in to /ets/hosts"
+    ansible.builtin.lineinfile:
+      path: /etc/hosts
+      line: "{{ item.ip }} {{ item.name }}"
+      state: present
+    loop: "{{ cluster_hosts }}"
+
+
+
+
+ 
+  - name: Creates directory if not exist
+    ansible.builtin.file:
+      path: /root/.ssh
+      state: directory
+      owner: "root"
+      group: "root"
+      mode: "0700"
+
+
+
+  - name: "SSH: Copy private key "
+    ansible.builtin.copy:
+      src: "files/rsa/id_rsa"
+      dest: "/root/.ssh/id_rsa"
+      owner: "root"
+      group: "root"
+      mode: "0700"
+
+  - name: "SSH: Copy public key "
+    ansible.builtin.copy:
+      src: "files/rsa/authorized_keys"
+      dest: "/root/.ssh/authorized_keys"
+      owner: "root"
+      group: "root"
+      mode: "0600"
+  - name: "Reload ssh"
+    ansible.builtin.service:
+      name: "ssh"
+      state: "reloaded"
+
+
+
+
+  - name: "Make the Swap inactive"
+    command: swapoff -a
+
+  - name: "Remove Swap entry from /etc/fstab."
+    lineinfile:
+      dest: /etc/fstab
+      regexp: swap
+      state: absent
+
+  - name:  "Clear REPO"
+    shell:  "cat /dev/null > /etc/apt/sources.list"
+
+
+  - name: "Insert addr in REPO"
+    blockinfile:
+      path: /etc/apt/sources.list
+      block: |
+        deb http://archive.ubuntu.com/ubuntu/ focal main restricted universe multiverse
+        deb-src http://archive.ubuntu.com/ubuntu/ focal main restricted universe multiverse
+
+        deb http://archive.ubuntu.com/ubuntu/ focal-updates main restricted universe multiverse
+        deb-src http://archive.ubuntu.com/ubuntu/ focal-updates main restricted universe multiverse
+
+        deb http://archive.ubuntu.com/ubuntu/ focal-security main restricted universe multiverse
+        deb-src http://archive.ubuntu.com/ubuntu/ focal-security main restricted universe multiverse
+
+        deb http://archive.ubuntu.com/ubuntu/ focal-backports main restricted universe multiverse
+        deb-src http://archive.ubuntu.com/ubuntu/ focal-backports main restricted universe multiverse
+
+        deb http://archive.canonical.com/ubuntu focal partner
+        deb-src http://archive.canonical.com/ubuntu focal partner
+
+
+
+  - name: Import repo keys
+    shell:  "{{item}}"      
+    loop:
+      - apt-key adv --keyserver keyserver.ubuntu.com --recv-keys 112695A0E562B32A
+      - apt-key adv --keyserver keyserver.ubuntu.com --recv-keys 54404762BBB6E853
+      - apt-key adv --keyserver keyserver.ubuntu.com --recv-keys 648ACFD622F3D138
+      - apt-key adv --keyserver keyserver.ubuntu.com --recv-keys 0E98404D386FA1D9
+      - apt-key adv --keyserver keyserver.ubuntu.com --recv-keys DCC9EFBF77E11517
+      - apt-key adv --keyserver keyserver.ubuntu.com --recv-keys 871920D1991BC93C
+
+
+
+
+  - name: "Update REPO"
+    shell:
+      "apt update -y"
+ 
+
+  - name: "Reboot systems"
+    reboot:
+      msg: 'Reboot initiate by Ansible'
+      connect_timeout: 35
+      reboot_timeout: 35
+      pre_reboot_delay: 35
+      post_reboot_delay: 60
+      test_command: 'id'
+     #when: not member.stat.exists 
+    tags:
+    - reboot 
+
+
+
+  - name: "Installing soft"
+    ansible.builtin.apt:
+      name: "{{ item }}"
+      state: "latest"
+      update_cache: true
+    with_items:
+      - "curl"
+      - "apt-transport-https"
+      - "git"
+      - "iptables-persistent"
+      - "ca-certificates"
+      - "gnupg-agent"
+      - "software-properties-common"
+      - "conntrack"
+      - "aufs-tools"
+      - "python3-apt"
+      - "ethtool"
+      - "rsync"
+      - "python3"
+      - "python3-pip"
+      - "python3-setuptools"
+      - "bridge-utils"
+      - "mc"
+      - "cloud-guest-utils"
+      - "parted"
+      - "nfs-common"
+
+
+
+  - name: "Installing resolvconf"
+    ansible.builtin.apt:
+      name: "{{ item }}"
+      state: "latest"
+      update_cache: true
+    with_items:
+      - "resolvconf"
+
+
+
+  - name: "Restore dns servers"
+    shell:  "{{item}}"      
+    loop:
+      - cat /dev/null > /etc/resolv.conf
+      - echo "nameserver 192.168.15.9" >> /etc/resolv.conf
+      - echo "nameserver 192.168.15.1" >> /etc/resolv.conf
+
+
+
+
+
+- hosts: k8ss
+  become: true
+  tasks:
+  - name: "Reboot systems"
+    reboot:
+      msg: 'Reboot initiate by Ansible'
+      connect_timeout: 35
+      reboot_timeout: 35
+      pre_reboot_delay: 35
+      post_reboot_delay: 60
+      test_command: 'id'
+     #when: not member.stat.exists 
+    tags:
+    - reboot 
+
+
+
+
+- hosts: k8ss
+  become: true
+  tasks:
+
+
+
+  - name: Creates directory keyrings if not exist
+    ansible.builtin.file:
+      path: /etc/apt/keyrings
+      state: directory
+      owner: "root"
+      group: "root"
+      mode: "0755"
+
+
+
+
+  - name: Remove file repo if exist
+    ansible.builtin.file:
+      path: "{{item}}"
+      state: absent
+    loop:
+      - "/usr/share/keyrings/docker-archive-keyring.gpg"
+      - "/etc/apt/sources.list.d/docker.list"
+      - "/etc/apt/keyrings/kubernetes-apt-keyring.gpg"
+      - "/etc/apt/sources.list.d/kubernetes.list"
+
+
+
+  - name: "Add new repo kubernetes and containerd"
+    shell:  "{{item}}"      
+    loop:
+      - curl -fsSL https://download.docker.com/linux/ubuntu/gpg | gpg --dearmor -o /usr/share/keyrings/docker-archive-keyring.gpg
+      - echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/docker-archive-keyring.gpg] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable" | tee /etc/apt/sources.list.d/docker.list
+      - curl -fsSL https://pkgs.k8s.io/core:/stable:/v1.29/deb/Release.key | gpg --dearmor -o /etc/apt/keyrings/kubernetes-apt-keyring.gpg
+      - echo "deb [signed-by=/etc/apt/keyrings/kubernetes-apt-keyring.gpg] https://pkgs.k8s.io/core:/stable:/v1.29/deb/ /" | tee /etc/apt/sources.list.d/kubernetes.list
+
+
+
+
+  - name: "Installing kubernetes"
+    ansible.builtin.apt:
+      name: "{{ item }}"
+      state: "latest"
+      update_cache: true
+    with_items:
+      - "containerd.io"
+      - "kubelet"
+      - "kubeadm"
+      - "kubectl"
+
+
+
+
+  - name: "Copy config containerd "
+    ansible.builtin.copy:
+      src: "files/config.toml"
+      dest: "/etc/containerd/config.toml"
+      owner: "root"
+      group: "root"
+      mode: "0755"
+
+
+
+
+
+  - name: "Creating an empty file containerd.conf for autoload modules"
+    file:
+      path: "/etc/modules-load.d/containerd.conf"
+      state: touch
+
+
+
+
+  - name: "Enable modules for containerd"
+    blockinfile:
+      path: /etc/modules-load.d/containerd.conf
+      block: |
+        overlay
+        br_netfilter
+
+
+
+  - name: "Creating empty sysctl-config file: /etc/sysctl.d/99-kubernetes-cri.conf"
+    file:
+      path: "/etc/sysctl.d/99-kubernetes-cri.conf"
+      state: touch
+
+
+
+
+  - name: "Enable sysctl options for kubernetes-cri"
+    blockinfile:
+      path: /etc/sysctl.d/99-kubernetes-cri.conf
+      block: |
+        net.bridge.bridge-nf-call-iptables = 1
+        net.ipv4.ip_forward = 1
+        net.bridge.bridge-nf-call-ip6tables = 1
+
+
+
+  - name: "Load modules and restart sysctl"
+    shell:
+      modprobe br_netfilter
+      modprobe overlay
+      "sysctl --system"
+
+
+
+  - name: Enable resolvconf service
+    shell:  "{{item}}"      
+    loop:
+      - systemctl enable resolvconf.service
+      - systemctl start resolvconf.service
+      - systemctl start systemd-resolved.service
+      - systemctl enable systemd-resolved.service
+      - systemctl status resolvconf.service
+      - systemctl status systemd-resolved.service
+
+
+
+
+  - name: Start services k8s
+    shell:  "{{item}}"      
+    loop:
+      - systemctl restart containerd
+      - apt-mark hold kubelet kubeadm kubectl
+
+
+
+
+
+
+
+
+
+
+  - name: "Apply iptables for k8s worker node"
+    shell:
+      "iptables -I INPUT 1 -p tcp --match multiport --dports 10250,30000:32767 -j ACCEPT && netfilter-persistent save"
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+- name: "Iptables rules for master"
+  become: true
+  hosts: k8ss:!k8s_w001:!k8s_w002:!k8s_w003
+    
+  tasks:
+  - name: "Apply iptables for k8s master"
+    shell:
+      "iptables -I INPUT 1 -p tcp --match multiport --dports 6443,2379:2380,10250:10252 -j ACCEPT && netfilter-persistent save"
+      
+
+
+
+
+
+
+
+
+
+
+
+
+
+- hosts: k8ss
+  become: true
+  tasks:
+  - name: "Reboot systems"
+    reboot:
+      msg: 'Reboot initiate by Ansible'
+      connect_timeout: 15
+      reboot_timeout: 15
+      pre_reboot_delay: 15
+      post_reboot_delay: 60
+      test_command: 'id'
+     #when: not member.stat.exists 
+    tags:
+    - reboot 
+
+
+
+
+
+
+
+- hosts: k8ss:!k8s_w001:!k8s_w002:!k8s_w003
+  become: true
+  
+    
+  tasks:
+  
+  
+  - name: "Copy kube-flannel"
+    ansible.builtin.copy:
+      src: "files/kube-flannel.yml"
+      dest: "/root/kube-flannel.yml"
+      owner: "root"
+      group: "root"
+      mode: "0755"  
+  
+  
+  - name: Init cluster
+    shell:  "{{item}}"      
+    loop:
+      - kubeadm init --pod-network-cidr=10.244.0.0/16
+
+      
+
+  - name: Setup cluster
+    shell:  "{{item}}"      
+    loop:
+      - mkdir -p /root/.kube
+      - cp -i /etc/kubernetes/admin.conf /root/.kube/config
+      - kubectl apply -f /root/kube-flannel.yml
+
+
+
+
+
+
+
+
+- hosts: k8ss:!k8s_m001
+  become: true
+
+  tasks:
+  
+  - name: Get cluster token
+    shell: ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null  root@{{ hostvars['k8s_m001']['ansible_hn'] }} "kubeadm token create --print-join-command"
+    register: cluster_token    
+   
+
+  
+#  - name: Display raw output
+#    debug:
+#      msg: "{{ cluster_token.stdout }}"
+      
+      
+  - name: Join node in cluster
+    shell: "{{ cluster_token.stdout }}"
+
+      
+  
+      
+
+- hosts: k8ss:!k8s_w001:!k8s_w002:!k8s_w003
+  become: true
+ 
+
+  tasks:
+  
+  - name: "Label worker nodes"
+    shell:  "{{item}}"      
+    loop:
+      - kubectl label node {{ hostvars['k8s_w001']['ansible_hn'] }} node-role.kubernetes.io/worker=worker
+      - kubectl label node {{ hostvars['k8s_w002']['ansible_hn'] }} node-role.kubernetes.io/worker=worker
+      - kubectl label node {{ hostvars['k8s_w003']['ansible_hn'] }} node-role.kubernetes.io/worker=worker
+
+
+
