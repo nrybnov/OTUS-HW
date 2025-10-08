@@ -578,7 +578,7 @@ install_k8s_ubuntu.yml:
 
 
 
-# Установка сетевого плагина kube-flannel
+# Инициализация кластера и установка сетевого плагина kube-flannel
 
 
 - hosts: k8ss:!k8s_w001:!k8s_w002:!k8s_w003
