@@ -89,6 +89,13 @@ ansible -bi inventory.yml -m shell -a "free -g | head -n 2 && lscpu | grep -w \"
 
 
 
+
+Устанавливаем кластер k8s
+
+
+
+
+
 Инвентарь для установки кластера
 
 inventory.yml:
@@ -657,7 +664,7 @@ install_k8s_ubuntu.yml:
 
 ```
 cd ../
-ansible-playbook -bi inventory.yml k8s-cluster-deploy.yml
+ansible-playbook -bi inventory.yml install_k8s_ubuntu.yml
 ```
 
 
@@ -671,6 +678,117 @@ kubectl get nodes -o wide
 ```
 
 ![](img/2025-10-08_08-59.png)
+
+
+
+
+Обновление кластера с 1.29.x до 1.30.x
+
+
+Инвентарь остается тот же, используется плейбук upgrade_cluster.yaml
+
+
+upgrade_cluster.yaml:
+
+```
+- hosts: k8ss
+  become: true
+
+  tasks:
+  
+ # Добавляем репозиторий с новой версией kubelet и kubectl
+  
+  - name: "Change repo for upgrade kubernetes"
+    shell:  "{{item}}"      
+    loop:
+      - curl -fsSL https://pkgs.k8s.io/core:/stable:/v1.30/deb/Release.key | sudo gpg --dearmor -o /etc/apt/keyrings/kubernetes-apt-keyring-30.gpg
+      - echo "deb [signed-by=/etc/apt/keyrings/kubernetes-apt-keyring-30.gpg] https://pkgs.k8s.io/core:/stable:/v1.30/deb/ /" | tee /etc/apt/sources.list.d/kubernetes.list
+
+
+# Обновляем мастер ноду
+
+
+- hosts: k8ss:!k8s_w001:!k8s_w002:!k8s_w003
+  become: true
+
+  tasks:
+
+
+  - name: "Upgrade master node to 30"
+    shell:  "{{item}}"      
+    loop:
+      - apt-mark unhold kubeadm
+      - apt-get update
+      - apt-get install -y kubeadm="1.30.3-*"
+      - apt-mark hold kubeadm
+      - kubeadm upgrade node
+
+
+# Обновляем воркер ноды
+
+
+- hosts: k8ss:!k8s_m001
+  become: true
+
+  tasks:
+
+
+  - name: "Upgrade kubernetes to 30"
+    shell:  "{{item}}"      
+    loop:
+      - kubectl drain $HOSTNAME --ignore-daemonsets
+      - apt-mark unhold kubelet kubectl
+      - apt-get install -y kubelet="1.30.3-*" kubectl="1.30.3-*"
+      - apt-mark hold kubelet kubectl
+      - systemctl daemon-reload
+      - systemctl restart kubelet
+      - kubectl uncordon $HOSTNAME
+```
+
+
+
+
+
+
+Запускаем
+
+
+```
+cd ../
+ansible-playbook -bi inventory.yml upgrade_cluster.yaml
+```
+
+
+
+Проверяем
+
+
+```
+ssh root@192.168.15.101
+kubectl get nodes -o wide
+```
+
+![](img/2025-10-08_10-08.png)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
