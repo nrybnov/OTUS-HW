@@ -43,6 +43,95 @@
 <details>
   <summary>Решение:</summary>
 
+Для выполнения ДЗ будем использовать стенд с установленным KVM (QEMU emulator version 7.2.13) и набором библиотек, инструментов и API libvirtd v 9.0.0.
+
+Для массового создания - удаления ВМ, были написаны скрипты vm/create_vm.py  vm/delete_vm.py, которые работают с csv файлом содержащим список с описанием ВМ.
+
+Так же, для выполнения задания установим утилиту ansible.
+
+
+Устанавливаем ВМ:
+
+
+```
+cd vm
+```
+
+kubernetes-prod_create_list.csv
+
+
+```
+# Имя манины,кол-во ядер CPU,RAM,образ OS,диски, через пробел(название=емкость=тип=формат),тип OS,сеть
+k8s-m001,2,8048,ubuntu-20.04-tmpl,"system=30=sata=qcow2",linux2022,"192.168.15.101"
+k8s-w001,2,8048,ubuntu-20.04-tmpl,"system=30=sata=qcow2",linux2022,"192.168.15.102"
+k8s-w002,2,8048,ubuntu-20.04-tmpl,"system=30=sata=qcow2",linux2022,"192.168.15.103"
+k8s-w003,2,8048,ubuntu-20.04-tmpl,"system=30=sata=qcow2",linux2022,"192.168.15.104"
+```
+
+
+```
+cd vm
+./create_vm.py kubernetes-prod_create_list.csv 
+``
+
+
+Проверяем:
+
+```
+virsh list --all
+``
+
+![](img/2025-10-07_19-12.png)
+
+
+
+```
+ansible -bi inventory.yml -m shell -a "free -g | head -n 2 && lscpu | grep -w \"CPU(s)\" | head -n1"  all
+``
+
+![](img/2025-10-07_19-20.png)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 Создаём манифест для pod с distroless образом
 
