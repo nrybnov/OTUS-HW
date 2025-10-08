@@ -630,7 +630,7 @@ install_k8s_ubuntu.yml:
   
   
   
-# Добавления лейбла worker воркер нодам
+# Добавления лейбла node-role=worker воркер нодам
       
 
 - hosts: k8ss:!k8s_w001:!k8s_w002:!k8s_w003
