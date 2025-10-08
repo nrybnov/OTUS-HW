@@ -733,7 +733,7 @@ upgrade_cluster.yaml:
   tasks:
 
 
-  - name: "Upgrade kubernetes to 30"
+  - name: "Upgrade worker nodes to 30"
     shell:  "{{item}}"      
     loop:
       - kubectl drain $HOSTNAME --ignore-daemonsets
