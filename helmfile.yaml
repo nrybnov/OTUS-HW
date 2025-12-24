@@ -1,0 +1,86 @@
+---
+
+
+releases:
+  - namespace: dev
+    name: kafka
+    chart: kafka-32.4.2.tgz
+    values:
+      - controller:
+          replicaCount: 1
+          persistence:
+            size: 1Gi
+          logPersistence:
+            size: 1Gi
+
+          
+        
+        listeners:
+          client:
+            protocol: PLAINTEXT
+          interbroker:
+             protocol: PLAINTEXT
+        networkPolicy:
+          enabled: true
+        
+        
+        
+        broker:
+          replicaCount: 1
+          persistence:
+            size: 1Gi
+          logPersistence:
+            size: 1Gi
+            
+  - namespace: prod
+    name: kafka
+    chart: kafka-25.3.5.tgz
+    values:
+      - controller:
+          replicaCount: 1
+          persistence:
+            size: 1Gi
+          logPersistence:
+            size: 1Gi
+          readinessProbe:
+            enabled: false
+          livenessProbe:
+            enabled: false
+        
+        listeners:
+          client:
+            protocol: SASL_PLAINTEXT
+          interbroker:
+             protocol: SASL_PLAINTEXT
+                
+        
+        broker:
+          replicaCount: 5
+          persistence:
+            size: 1Gi
+          logPersistence:
+            size: 1Gi
+          livenessProbe:
+            enabled: false
+          readinessProbe:
+            enabled: false
+        
+        networkPolicy:
+          enabled: true           
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
